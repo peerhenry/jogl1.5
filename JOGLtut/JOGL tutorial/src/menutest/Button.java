@@ -2,34 +2,31 @@ package menutest;
 
 import javax.media.opengl.GLAutoDrawable;
 
-import peergl.scene.Displayable;
-
-public class Button implements Displayable
+public class Button extends UVQuad
 {
-
-	private UVQuad quad;
 
 	public Button(UVQuad q)
 	{
-		quad = q;
+		super(q);
 	}
 	
 	@Override
 	public void init(GLAutoDrawable drawable)
 	{
-		quad.init(drawable);
+		super.init(drawable);
+		//System.out.println("initting button.");
 	}
 
 	@Override
 	public void display(GLAutoDrawable drawable)
 	{
-		quad.display(drawable);
+		super.display(drawable);
 	}
 
 	@Override
 	public void dispose(GLAutoDrawable drawable)
 	{
-		quad.dispose(drawable);
+		super.dispose(drawable);
 	}
 	
 }

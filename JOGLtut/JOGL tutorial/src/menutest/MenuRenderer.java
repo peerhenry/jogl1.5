@@ -1,16 +1,8 @@
 package menutest;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.io.File;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
+import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.media.opengl.GL4;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
@@ -27,7 +19,7 @@ public class MenuRenderer implements GLEventListener
 {
 
 	private ShaderProgram program;
-	private UVQuad quad;
+	private List<Button> buttons = new ArrayList<Button>();
 	GL4 gl;
 	
 	public MenuRenderer()
@@ -35,12 +27,27 @@ public class MenuRenderer implements GLEventListener
 		program = new ShaderProgram();
 		program.attachShader(new ShaderObject(ShaderType.VERTEX, "//menushaders//vertex.glsl"));
 		program.attachShader(new ShaderObject(ShaderType.FRAGMENT, "//menushaders//fragment.glsl"));
-		quad = new UVQuad(
-				new Vec2(0,0),
-				new Vec2(1,0),
-				new Vec2(1,1),
-				new Vec2(0,1)
+		addButtons();
+	}
+	
+	private void addButtons()
+	{
+		for(int i = 0; i<4; i++) addButton(i);
+	}
+	
+	private void addButton(int n)
+	{
+		UVQuad quad = new UVQuad(
+				new Vec2(0,0.25f*n),
+				new Vec2(1,0.25f*n),
+				new Vec2(1,0.25f*(n+1)),
+				new Vec2(0,0.25f*(n+1))
 				);
+		
+		Button newButton = new Button(quad);
+		newButton.setOrigin( new Vec2(-0.5f,0.5f - n*0.25f) );
+		newButton.setHeight(0.25f);
+		buttons.add(newButton);
 	}
 	
 	public void init(GLAutoDrawable drawable)
@@ -49,7 +56,10 @@ public class MenuRenderer implements GLEventListener
 		program.init(drawable);
 		loadTexture();
 		//super.init(drawable);
-		quad.init(drawable);
+		for(Button button: buttons)
+		{
+			button.init(drawable);
+		}
 		gl.glClearColor(0.1f, 0.3f, 0.9f, 1);
 		gl.glBlendFunc(GL4.GL_SRC_ALPHA, GL4.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glEnable(GL4.GL_BLEND);
@@ -74,7 +84,11 @@ public class MenuRenderer implements GLEventListener
 	@Override
 	public void display(GLAutoDrawable drawable)
 	{
-		quad.display(drawable);
+		gl.glClear( GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT );
+		for(Button button: buttons)
+		{
+			button.display(drawable);
+		}
 	}
 
 	@Override
